@@ -21,3 +21,6 @@ console.log(decrypted)
 
 let account2 = phpcoinCrypto.importPrivateKey(account.privateKey)
 console.log(account2)
+
+let publicKey = phpcoinCrypto.getPublicKey(account.privateKey)
+console.log(publicKey)

@@ -98,7 +98,6 @@ function str_split (string, splitLength) { // eslint-disable-line camelcase
     return chunks
 }
 
-
 module.exports = {
     generateAccount() {
         let privateKey = new PrivateKey();
@@ -181,6 +180,13 @@ module.exports = {
         } catch (e) {
             return false
         }
+    },
+    getPublicKey(private_key) {
+        let privateKeyPem = this.privateKeyToPem(private_key)
+        let publicKeyDer = privateKeyPem.publicKey()
+        let publicKeyPem = publicKeyDer.toPem()
+        let publicKey = pem2coin(publicKeyPem)
+        return publicKey
     },
     network: defaultNetwork
 }
