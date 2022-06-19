@@ -1,0 +1,10 @@
+{
+  "name": "phpcoin-crypto",
+  "version": "1.0.0",
+  "description": "Javascript crypto functions for PHP Coin",
+  "main": "index.js",
+  "scripts": {
+  },
+  "author": "",
+  "license": "ISC"
+}
