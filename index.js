@@ -10,6 +10,9 @@ let networks = {
     mainnet:{
         network_prefix: "38"
     },
+    "mainnet-alpha":{
+        network_prefix: "38"
+    },
     testnet: {
         network_prefix: "30"
     }
@@ -98,27 +101,38 @@ function str_split (string, splitLength) { // eslint-disable-line camelcase
     return chunks
 }
 
+function privateKeyToPem(privateKeyBase58) {
+    let private_key_bin = Base58.decode(privateKeyBase58)
+    let private_key_base64 = Buffer.from(private_key_bin).toString('base64');
+    let private_key_pem = '-----BEGIN EC PRIVATE KEY-----\n'
+        + str_split(private_key_base64, 64)
+            .join('\n')
+        + '\n-----END EC PRIVATE KEY-----\n'
+    let privateKey = PrivateKey.fromPem(private_key_pem)
+    return privateKey
+}
+
 module.exports = {
-    generateAccount() {
+    generateAccount(network = defaultNetwork) {
         let privateKey = new PrivateKey();
         let privateKeyPem = privateKey.toPem()
         let privateKeyB58 = pem2coin(privateKeyPem)
         let publicKey = privateKey.publicKey();
         let publicKeyPem = publicKey.toPem()
         let publicKeyB58 = pem2coin(publicKeyPem)
-        let address = this.getAddress(publicKeyB58, this.network)
+        let address = getAddress(publicKeyB58, network)
         return {
             privateKey: privateKeyB58,
             publicKey: publicKeyB58,
             address,
-            network: this.network
+            network
         }
     },
     getAddress,
     pem2coin,
     coin2pem,
     sign(data, privateKey) {
-        let privateKeyPem = this.privateKeyToPem(privateKey)
+        let privateKeyPem = privateKeyToPem(privateKey)
         let signature = Ecdsa.sign(data, privateKeyPem);
         let signature_b64 = signature.toBase64()
         let signature_bin = Buffer.from(signature_b64, 'base64')
@@ -129,20 +143,10 @@ module.exports = {
         let signature_bin = Base58.decode(signature)
         let signature_b64 = Buffer.from(signature_bin).toString('base64')
         let signatureDer = Signature.fromBase64(signature_b64)
-        let publicKeyPem = this.coin2pem(publicKey)
+        let publicKeyPem = coin2pem(publicKey)
         let publicKeyDer = PublicKey.fromPem(publicKeyPem);
         let res = Ecdsa.verify(data, signatureDer, publicKeyDer)
         return res
-    },
-    privateKeyToPem(privateKeyBase58) {
-        let private_key_bin = Base58.decode(privateKeyBase58)
-        let private_key_base64 = Buffer.from(private_key_bin).toString('base64');
-        let private_key_pem = '-----BEGIN EC PRIVATE KEY-----\n'
-            + str_split(private_key_base64, 64)
-                .join('\n')
-            + '\n-----END EC PRIVATE KEY-----\n'
-        let privateKey = PrivateKey.fromPem(private_key_pem)
-        return privateKey
     },
     encryptString(str, pass) {
         let passphrase = crypto.createHash('sha256').update(pass).digest().toString('hex').substr(0, 32)
@@ -164,14 +168,14 @@ module.exports = {
         let str = (decrypted + decipher.final('utf8'))
         return str
     },
-    importPrivateKey(privateKey) {
+    importPrivateKey(privateKey, network = defaultNetwork) {
         try {
-            let privateKeyPem = this.privateKeyToPem(privateKey)
+            let privateKeyPem = privateKeyToPem(privateKey)
             let publicKeyDer = privateKeyPem.publicKey()
             let publicKeyPem = publicKeyDer.toPem()
             let publicKey = pem2coin(publicKeyPem)
-            let address = getAddress(publicKey, this.network)
-            if(!verifyAddress(address, this.network)) {
+            let address = getAddress(publicKey, network)
+            if(!verifyAddress(address, network)) {
                 return false
             }
             return {
@@ -182,12 +186,13 @@ module.exports = {
         }
     },
     getPublicKey(private_key) {
-        let privateKeyPem = this.privateKeyToPem(private_key)
+        let privateKeyPem = privateKeyToPem(private_key)
         let publicKeyDer = privateKeyPem.publicKey()
         let publicKeyPem = publicKeyDer.toPem()
         let publicKey = pem2coin(publicKeyPem)
         return publicKey
     },
+    privateKeyToPem,
     network: defaultNetwork
 }
 
