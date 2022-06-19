@@ -40,7 +40,7 @@ let coin2pem = (coin, private_key = false) => {
     }
 }
 
-let getAddress = (pubkey, network) => {
+let getAddress = (pubkey, network = defaultNetwork) => {
     let network_prefix = networks[network].network_prefix
     let hash1 = crypto.createHash('sha256').update(pubkey).digest('hex');
     let hash2 = crypto.createHash('ripemd160').update(hash1).digest('hex');
@@ -55,7 +55,7 @@ let getAddress = (pubkey, network) => {
     return addressB58
 }
 
-let verifyAddress = (address, network) => {
+let verifyAddress = (address, network = defaultNetwork) => {
     let network_prefix = networks[network].network_prefix
     let addressBin = Base58.decode(address)
     let addressHex = Buffer.from(addressBin).toString('hex')
