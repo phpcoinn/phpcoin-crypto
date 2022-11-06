@@ -6,19 +6,7 @@ const PrivateKey = ellipticcurve.PrivateKey;
 const PublicKey = ellipticcurve.PublicKey;
 const Signature = ellipticcurve.Signature;
 
-let networks = {
-    mainnet:{
-        network_prefix: "38"
-    },
-    "mainnet-alpha":{
-        network_prefix: "38"
-    },
-    testnet: {
-        network_prefix: "30"
-    }
-}
-
-const defaultNetwork = "mainnet"
+const network_prefix = "38"
 
 let pem2coin = (pem) => {
     let pemB58 = pem.replace('-----BEGIN EC PRIVATE KEY-----','')
@@ -43,8 +31,8 @@ let coin2pem = (coin, private_key = false) => {
     }
 }
 
-let getAddress = (pubkey, network = defaultNetwork) => {
-    let network_prefix = networks[network].network_prefix
+let getAddress = (pubkey) => {
+    let network_prefix = "38"
     let hash1 = crypto.createHash('sha256').update(pubkey).digest('hex');
     let hash2 = crypto.createHash('ripemd160').update(hash1).digest('hex');
     let baseAddress = network_prefix + hash2
@@ -58,8 +46,7 @@ let getAddress = (pubkey, network = defaultNetwork) => {
     return addressB58
 }
 
-let verifyAddress = (address, network = defaultNetwork) => {
-    let network_prefix = networks[network].network_prefix
+let verifyAddress = (address) => {
     let addressBin = Base58.decode(address)
     let addressHex = Buffer.from(addressBin).toString('hex')
     let addressChecksum = addressHex.substr(addressHex.length - 8, addressHex.length)
@@ -113,19 +100,18 @@ function privateKeyToPem(privateKeyBase58) {
 }
 
 module.exports = {
-    generateAccount(network = defaultNetwork) {
+    generateAccount() {
         let privateKey = new PrivateKey();
         let privateKeyPem = privateKey.toPem()
         let privateKeyB58 = pem2coin(privateKeyPem)
         let publicKey = privateKey.publicKey();
         let publicKeyPem = publicKey.toPem()
         let publicKeyB58 = pem2coin(publicKeyPem)
-        let address = getAddress(publicKeyB58, network)
+        let address = getAddress(publicKeyB58)
         return {
             privateKey: privateKeyB58,
             publicKey: publicKeyB58,
-            address,
-            network
+            address
         }
     },
     getAddress,
@@ -168,14 +154,14 @@ module.exports = {
         let str = (decrypted + decipher.final('utf8'))
         return str
     },
-    importPrivateKey(privateKey, network = defaultNetwork) {
+    importPrivateKey(privateKey) {
         try {
             let privateKeyPem = privateKeyToPem(privateKey)
             let publicKeyDer = privateKeyPem.publicKey()
             let publicKeyPem = publicKeyDer.toPem()
             let publicKey = pem2coin(publicKeyPem)
-            let address = getAddress(publicKey, network)
-            if(!verifyAddress(address, network)) {
+            let address = getAddress(publicKey)
+            if(!verifyAddress(address)) {
                 return false
             }
             return {
@@ -192,8 +178,7 @@ module.exports = {
         let publicKey = pem2coin(publicKeyPem)
         return publicKey
     },
-    privateKeyToPem,
-    network: defaultNetwork
+    privateKeyToPem
 }
 
 
