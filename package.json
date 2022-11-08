@@ -1,6 +1,6 @@
 {
   "name": "phpcoin-crypto",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Javascript crypto functions for PHP Coin",
   "main": "index.js",
   "scripts": {
