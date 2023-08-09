@@ -3,12 +3,13 @@
   "version": "1.0.2",
   "description": "Javascript crypto functions for PHP Coin",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "argon2": "^0.30.3",
     "base-58": "0.0.1",
-    "starkbank-ecdsa": "^1.1.4"
+    "starkbank-ecdsa": "^1.1.4",
+    "uuid": "^9.0.0"
   }
 }
