@@ -177,7 +177,10 @@ module.exports = {
         let publicKey = pem2coin(publicKeyPem)
         return publicKey
     },
-    privateKeyToPem
+    privateKeyToPem,
+    generateRandomString(length) {
+        return crypto.randomBytes(length).toString('hex');
+    }
 }
 
 

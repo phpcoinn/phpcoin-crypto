@@ -25,3 +25,7 @@ console.log({account2})
 
 let publicKey = phpcoinCrypto.getPublicKey(account.privateKey)
 console.log({publicKey})
+
+let randomString = phpcoinCrypto.generateRandomString(10)
+console.log({randomString})
+
