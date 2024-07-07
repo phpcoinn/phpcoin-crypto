@@ -180,6 +180,9 @@ module.exports = {
     privateKeyToPem,
     generateRandomString(length) {
         return crypto.randomBytes(length).toString('hex');
+    },
+    sha256(input) {
+        return crypto.createHash('sha256').update(input).digest('hex');
     }
 }
 

@@ -29,3 +29,7 @@ console.log({publicKey})
 let randomString = phpcoinCrypto.generateRandomString(10)
 console.log({randomString})
 
+let input = 'some_input'
+let hash = phpcoinCrypto.sha256(input)
+console.log({hash})
+
